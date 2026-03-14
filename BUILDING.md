@@ -11,6 +11,7 @@ This project supports building on
 - Visual Studio with the C++ workloads (Windows)
 - build-essential (Linux)
 - CMake (Required for some conan packages, but not for the template)
+- vswhere (Required for some msvs)
 
 ## Windows
 ### Initial configuration

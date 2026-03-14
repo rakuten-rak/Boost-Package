@@ -43,3 +43,5 @@ After you used this template for creating your new project please make sure to f
 
 ## License
 The code shipped with MoxPP is licensed under the `MIT License`. All python and lua scripts have the license embedded into them. Additional attribution is not required as long as the template is not redistributed itself. Feel free to use the template in your projects. This is no legal advice! Consult your lawyer! 
+
+
