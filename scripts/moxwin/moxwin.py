@@ -30,17 +30,34 @@ def GetCodepage():
     
 def FindLatestVisualStudio():
     vswhere = os.getenv('programfiles(x86)') + '\\Microsoft Visual Studio\\Installer\\vswhere.exe'
-    out = subprocess.check_output((vswhere, '-latest', '-nocolor', '-format', 'json'))
+    try:
+        out = subprocess.check_output((vswhere, '-latest', '-nocolor', '-format', 'json'))
+    except FileNotFoundError:
+        raise ValueError("vswhere.exe not found. Please install Visual Studio or the Build Tools.")
     return json.loads(out.decode(f'cp{GetCodepage()}'))
 
 def GetVisualStudioYearNumber(vswhere):
-    installationVersion = vswhere[0]['installationVersion'].split('.')[0]
-    if installationVersion == '17':
-        return '2022'
-    if installationVersion == '16':
-        return '2019'
+    if not vswhere:
+        raise ValueError("No Visual Studio installation found (vswhere returned no results).")
+
+    installationVersion = str(vswhere[0].get('installationVersion', '')).split('.')[0]
     if installationVersion == '15':
         return '2017'
+    if installationVersion == '16':
+        return '2019'
+
+    # Premake currently supports up to VS 2022 (internal version 17).
+    # Treat any newer Visual Studio (18+, e.g. VS 2025/2026) as VS 2022 for generator purposes.
+    try:
+        if int(installationVersion) >= 17:
+            return '2022'
+    except ValueError:
+        pass
+
+    raise ValueError(
+        f"Unsupported Visual Studio version '{installationVersion}'. "
+        "Please install Visual Studio 2017, 2019, or 2022."
+    )
 
 def GetVisualStudioPath(vswhere):
     return vswhere[0]['installationPath']
